@@ -14,3 +14,5 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 .history/*
+DatingApp.API/.vs/DatingApp.API/DesignTimeBuild/.dtbcache.v2
+DatingApp.API/.vs/DatingApp.API/v16/.suo
