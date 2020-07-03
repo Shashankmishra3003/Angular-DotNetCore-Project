@@ -37,6 +37,7 @@ namespace DatingApp.API
             }
             );
             services.AddCors();
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
             services.AddAutoMapper(typeof(DatingRepository).Assembly); //mapping models amd DTO's
             services.AddScoped<IAuthRepository, AuthRepository>(); // Service for Authentication
             services.AddScoped<IDatingRepository, DatingRepository>(); //Service for fetching users
