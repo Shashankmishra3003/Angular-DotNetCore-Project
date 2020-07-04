@@ -59,6 +59,14 @@ export class PhotoEditorComponent implements OnInit {
         };
         // now the photo object is ready, we push it to the photo array contaning other photos
         this.photos.push(photo);
+        if (photo.isMain) {
+          // using Behaviour subejct
+          this.authService.changeMemberPhoto(photo.url);
+          // Update the User Object with the updated photo
+          this.authService.currentUser.photoUrl = photo.url;
+          // replace the user form local storage with updated user onject
+          localStorage.setItem('user', JSON.stringify(this.authService.currentUser));
+        }
       }
     };
   }
