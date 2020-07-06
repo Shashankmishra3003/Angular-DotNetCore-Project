@@ -8,4 +8,6 @@
 <li>Registration of new user uses Reative Forms and Form Builder, along with providing Validation.</li>
 <li>Website provides the feature of adding new photos and modifying the existing photos. Photos are stored on Cloudinary</li>
 <li>Users can select the uploaded photos as Main Profile photo, this feature makes use of Parent to child component and Any to any component communication</li>
+<li>Users can see the Last Active time of their matches</li>
+<li>Users can Filter and Sort their matches.</li>
 </ul>
