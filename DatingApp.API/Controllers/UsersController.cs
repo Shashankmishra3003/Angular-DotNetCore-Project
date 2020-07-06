@@ -28,11 +28,31 @@ namespace DatingApp.API.Controllers
             this._mapper = mapper;
         }
 
+        // Dotnet core figures out where to get the parameters for this get request, since we are not
+        // sending a query string, we need to explicitly tell that this parameter is FromQuery
         [HttpGet]
-        public async Task<IActionResult> GetUsers()
+        public async Task<IActionResult> GetUsers([FromQuery]UserParams userParams)
         {
-            var users = await _repo.GetUsers();
+            var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var userFromRepo = await _repo.GetUser(currentUserId);
+
+            // setting the UserId and Gender. Setting opposite gender as of user if the gender is not 
+            // specified in user params
+            userParams.UserId = currentUserId;
+
+            if(string.IsNullOrEmpty(userParams.Gender))
+            {
+                userParams.Gender = userFromRepo.Gender == "male" ? "female" : "male";
+            }
+
+            // users is a PagedList of users, allowing to access the pagination info
+            var users = await _repo.GetUsers(userParams);
             var usersToReturn = _mapper.Map<IEnumerable<UserForListDto>>(users);
+
+            // Adding pagination information to response header
+            Response.AddPagination(users.CurrentPage, users.PageSize,
+                    users.TotalCount, users.TotalPages);
             return Ok(usersToReturn);
         }
 
