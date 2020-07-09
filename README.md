@@ -10,4 +10,5 @@
 <li>Users can select the uploaded photos as Main Profile photo, this feature makes use of Parent to child component and Any to any component communication</li>
 <li>Users can see the Last Active time of their matches</li>
 <li>Users can Filter and Sort their matches.</li>
+<li>Users can send and receive Private messages to each other. Message are shown in a Chat format</li>
 </ul>
