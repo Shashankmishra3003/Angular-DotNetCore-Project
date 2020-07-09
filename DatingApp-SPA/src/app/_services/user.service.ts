@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { User } from '../_models/user';
 import { PaginatedResult } from '../_models/pagination';
 import { map } from 'rxjs/operators';
+import { Message } from '../_models/message';
 
 
 @Injectable({
@@ -74,6 +75,51 @@ deletePhoto(userId: number, id: number){
 
 sendLike(id: number, recipientId: number) {
   return this.http.post(this.baseUrl + 'users/' + id + '/like/' + recipientId, {});
+}
+
+getMessages(id: number, page?, itemsPerPage?, messageContainer?) {
+  const paginatedResult: PaginatedResult<Message[]> = new PaginatedResult<Message[]>();
+
+  let params = new HttpParams();
+
+  params = params.append('MessageContainer', messageContainer);
+
+  if (page != null && itemsPerPage != null) {
+    // creating params with pagination information
+    params = params.append('pageNumber', page);
+    params = params.append('pageSize', itemsPerPage);
+  }
+
+  // similar to getting User we need to Observe the Response
+  // we need to specify what the get is returning in this case Message[]
+  return this.http.get<Message[]>(this.baseUrl + 'users/' + id + '/messages', {observe: 'response', params})
+    .pipe(
+      map(response => {
+        paginatedResult.result = response.body;
+        if (response.headers.get('Pagination') !== null) {
+          paginatedResult.pagination = JSON.parse(response.headers.get('Pagination'));
+        }
+
+        return paginatedResult;
+      })
+    );
+}
+
+getMessageThread(id: number, recipientId: number) {
+  return this.http.get<Message[]>(this.baseUrl + 'users/' + id + '/messages/thread/' + recipientId);
+}
+
+sendMessade(id: number, message: Message) {
+  return this.http.post(this.baseUrl + 'users/' + id + '/messages', message);
+}
+
+deleteMessage(id: number, userId: number) {
+  return this.http.post(this.baseUrl + 'users/' + userId + '/messages/' + id, {});
+}
+
+markAsRead(userId: number, messageId: number) {
+  this.http.post(this.baseUrl + 'users/' + userId + '/messages/' + messageId + '/read', {})
+    .subscribe();
 }
 
 }

@@ -133,5 +133,57 @@ namespace DatingApp.API.Data
         {
             return await _context.SaveChangesAsync() > 0;  //returns true when the value is > 0 else false
         }
+
+        public async Task<Message> GetMessage(int id)
+        {
+            return await _context.Messages.FirstOrDefaultAsync(m => m.Id == id);
+        }
+
+        public async Task<PagedList<Message>> GetMessageForUser(MessageParams messageParams)
+        {
+            // We need the photo with the message, ThenInclude()
+            var messages = _context.Messages.Include(u => u.Sender)
+                                   .ThenInclude(p => p.Photos)
+                                   .Include(u => u.Recipient)
+                                   .ThenInclude(p => p.Photos)
+                                   .AsQueryable();
+
+            // Condition for Inbox, Sent and Outbox and retuning the non deleted messages
+            switch(messageParams.MessageContainer)
+            {
+                case "Inbox":
+                    messages = messages.Where(u => u.RecipientId == messageParams.UserId
+                                           && u.RecipientDeleted == false);
+                    break;
+                case "Outbox":
+                    messages = messages.Where(u => u.SenderId == messageParams.UserId
+                                            && u.SenderDeleted == false);
+                    break;
+                default:
+                    messages = messages.Where(u => u.RecipientId == messageParams.UserId
+                                            && u.RecipientDeleted == false
+                                            && u.IsRead == false);
+                    break;
+            }
+
+            messages = messages.OrderByDescending(d => d.MessageSend);
+            return await PagedList<Message>.CreateAsync(messages, messageParams.PageNumber, messageParams.PageSize);
+        }
+
+        // Getting only the non deleted message thread for sender and recipient
+        public async Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId)
+        {
+            var messages =await _context.Messages.Include(u => u.Sender)
+                                   .ThenInclude(p => p.Photos)
+                                   .Include(u => u.Recipient)
+                                   .ThenInclude(p => p.Photos)
+                                   .Where(u => u.RecipientId == userId && u.RecipientDeleted == false
+                                          && u.SenderId == recipientId && u.SenderDeleted == false
+                                          || u.RecipientId == recipientId && u.SenderId == userId)
+                                   .OrderByDescending(m => m.MessageSend)
+                                   .ToListAsync();
+            return messages;
+                                   
+        }
     }
 }
