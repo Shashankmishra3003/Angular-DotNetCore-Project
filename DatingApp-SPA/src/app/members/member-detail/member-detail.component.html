@@ -26,7 +26,7 @@
           </div>
           <div class="card-footer">
             <div class="btn-group d-flex">
-              <button class="btn btn-primary w-100">Like</button>
+              <button class="btn btn-primary w-100"  (click)="sendLike(user.id)">Like</button>
               <!-- Each tab has an Id(0 indexed) like arrays, selcting the 4th tab -->
               <button class="btn btn-success w-100" (click)="selectTab(3)">Message</button>
             </div>
@@ -39,15 +39,21 @@
           <tabset class="member-tabset" #membersTabs> 
             <tab heading="About {{user.knownAs}}"> 
               <h4>Description</h4>
+              <p class="text-danger" *ngIf="user?.introduction === null">Description not updated by {{user.knownAs}}</p>
               <p>{{user.introduction}}</p>
               <h4>Looking For</h4>
+              <p class="text-danger" *ngIf="user?.lookingFor === null">Looking for not updated by {{user.knownAs}}</p>
               <p>{{user.lookingFor}}</p>
             </tab>
             <tab heading="Interests">
               <h4>Interests</h4>
+              <p class="text-danger" *ngIf="user?.interests === null">Interests not updated by {{user.knownAs}}</p>
               <p>{{user.interests}}</p>
             </tab>
             <tab heading="Photos">
+              <div *ngIf="galleryImages?.length === 0">
+                <p class="text-danger">No Photos Uploaded by {{user.knownAs}}</p>
+              </div>
               <ngx-gallery style="display: inline-block; margin-bottom: 20px;" [options]="galleryOptions"
                          [images]="galleryImages"></ngx-gallery>
             </tab>
