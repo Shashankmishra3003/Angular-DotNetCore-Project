@@ -2,5 +2,6 @@
 bin
 obj
 *.db
+wwwroot
 .sln
 appsettings.json

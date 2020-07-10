@@ -5,8 +5,34 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20200623223153_ExtendedUserClass.cs" />
-    <Compile Remove="Migrations\20200623223153_ExtendedUserClass.Designer.cs" />
+    <None Include="wwwroot\assets\user.png" />
+    <None Include="wwwroot\favicon.ico" />
+    <None Include="wwwroot\fontawesome-webfont.eot" />
+    <None Include="wwwroot\fontawesome-webfont.svg" />
+    <None Include="wwwroot\fontawesome-webfont.ttf" />
+    <None Include="wwwroot\fontawesome-webfont.woff" />
+    <None Include="wwwroot\fontawesome-webfont.woff2" />
+    <None Include="wwwroot\index.html" />
+    <None Include="wwwroot\main-es2015.js" />
+    <None Include="wwwroot\main-es2015.js.map" />
+    <None Include="wwwroot\main-es5.js" />
+    <None Include="wwwroot\main-es5.js.map" />
+    <None Include="wwwroot\polyfills-es2015.js" />
+    <None Include="wwwroot\polyfills-es2015.js.map" />
+    <None Include="wwwroot\polyfills-es5.js" />
+    <None Include="wwwroot\polyfills-es5.js.map" />
+    <None Include="wwwroot\runtime-es2015.js" />
+    <None Include="wwwroot\runtime-es2015.js.map" />
+    <None Include="wwwroot\runtime-es5.js" />
+    <None Include="wwwroot\runtime-es5.js.map" />
+    <None Include="wwwroot\styles-es2015.js" />
+    <None Include="wwwroot\styles-es2015.js.map" />
+    <None Include="wwwroot\styles-es5.js" />
+    <None Include="wwwroot\styles-es5.js.map" />
+    <None Include="wwwroot\vendor-es2015.js" />
+    <None Include="wwwroot\vendor-es2015.js.map" />
+    <None Include="wwwroot\vendor-es5.js" />
+    <None Include="wwwroot\vendor-es5.js.map" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +46,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
