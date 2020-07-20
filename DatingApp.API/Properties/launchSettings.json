@@ -22,7 +22,7 @@
       "launchBrowser": true,
       "launchUrl": "/members",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Production"
+        "ASPNETCORE_ENVIRONMENT": "Developement"
       },
       "applicationUrl": "http://localhost:5000"
     }

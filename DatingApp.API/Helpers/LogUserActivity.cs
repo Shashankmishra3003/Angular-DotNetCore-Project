@@ -25,7 +25,7 @@ namespace DatingApp.API.Helpers
             // serveices are being provided through DI in startup
             var repo = resultContext.HttpContext.RequestServices.GetService<IDatingRepository>();
             // Getting the user
-            var user = await repo.GetUser(userId);
+            var user = await repo.GetUser(userId, true);
             // Updating the LastActive date
             user.LastActive = DateTime.Now;
             await repo.SaveAll();

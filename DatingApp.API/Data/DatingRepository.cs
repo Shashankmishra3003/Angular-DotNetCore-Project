@@ -42,13 +42,20 @@ namespace DatingApp.API.Data
 
         public async Task<Photo> GetPhoto(int id)
         {
-            var photo = await _context.Photos.FirstOrDefaultAsync(p => p.Id == id);
+            var photo = await _context.Photos.IgnoreQueryFilters() 
+                   .FirstOrDefaultAsync(p => p.Id == id);
             return photo;
         }
 
-        public async Task<User> GetUser(int id)
+        public async Task<User> GetUser(int id, bool isCurrentUser)
         {
-            var user = await _context.Users.Include(p => p.Photos).FirstOrDefaultAsync(u => u.Id == id);
+            var query = _context.Users.Include(p => p.Photos).AsQueryable();
+
+            // Igrnoring the Query filter for current User
+            if (isCurrentUser)
+                query = query.IgnoreQueryFilters();
+
+            var user = await query.FirstOrDefaultAsync(u => u.Id == id);
             return user;
         }
 
@@ -59,7 +66,7 @@ namespace DatingApp.API.Data
             //return users;
             
             // getting users from the database as Queryable 
-            var users = _context.Users.Include(p => p.Photos)
+            var users = _context.Users
                            .OrderByDescending(u => u.LastActive)
                            .AsQueryable();
 
@@ -113,10 +120,7 @@ namespace DatingApp.API.Data
         // return the list of integers
         private async Task<IEnumerable<int>> GetUserLikes(int id, bool likers)
         {
-            var user = await _context.Users
-                            .Include(u => u.Likers)
-                            .Include(u => u.Likees)
-                            .FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
             if (likers)
             {
                 // returning the id list of likers of current User
@@ -142,11 +146,7 @@ namespace DatingApp.API.Data
         public async Task<PagedList<Message>> GetMessageForUser(MessageParams messageParams)
         {
             // We need the photo with the message, ThenInclude()
-            var messages = _context.Messages.Include(u => u.Sender)
-                                   .ThenInclude(p => p.Photos)
-                                   .Include(u => u.Recipient)
-                                   .ThenInclude(p => p.Photos)
-                                   .AsQueryable();
+            var messages = _context.Messages.Include(u => u.Sender).AsQueryable();
 
             // Condition for Inbox, Sent and Outbox and retuning the non deleted messages
             switch(messageParams.MessageContainer)
@@ -174,9 +174,6 @@ namespace DatingApp.API.Data
         public async Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId)
         {
             var messages =await _context.Messages.Include(u => u.Sender)
-                                   .ThenInclude(p => p.Photos)
-                                   .Include(u => u.Recipient)
-                                   .ThenInclude(p => p.Photos)
                                    .Where(u => u.RecipientId == userId && u.RecipientDeleted == false
                                           && u.SenderId == recipientId && u.SenderDeleted == false
                                           || u.RecipientId == recipientId && u.SenderId == userId)

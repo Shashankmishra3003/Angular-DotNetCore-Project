@@ -55,7 +55,8 @@ export class PhotoEditorComponent implements OnInit {
           url: res.url,
           dateAdded: res.dateAdded,
           description: res.description,
-          isMain: res.isMain
+          isMain: res.isMain,
+          isApproved: res.isApproved
         };
         // now the photo object is ready, we push it to the photo array contaning other photos
         this.photos.push(photo);

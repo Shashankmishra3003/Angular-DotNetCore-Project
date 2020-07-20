@@ -1,4 +1,5 @@
 ﻿using DatingApp.API.Models;
+using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,27 +10,54 @@ namespace DatingApp.API.Data
 {
     public class Seed
     {
-        public static void SeerUser(DataContext context)
+        public static void SeerUser(UserManager<User> userManager, RoleManager<Role> roleManager)
         {
            //Check if database has existing data
            
-            if(!context.Users.Any())
+            if(!userManager.Users.Any())
             {
                 var userData = System.IO.File.ReadAllText("Data/UserSeedData.json");
                 var users = JsonConvert.DeserializeObject<List<User>>(userData);
 
-                foreach(var user in users)
-                {
-                    byte[] passwordhash, passwordSalt;
-                    CreatePasswordHash("password", out passwordhash, out passwordSalt);
+                // creating roles
 
-                    user.PasswordHash = passwordhash;
-                    user.PasswordSalt = passwordSalt;
-                    user.Username = user.Username.ToLower();
-                    context.Users.Add(user);
+                var roles = new List<Role>
+                {
+                    new Role {Name = "Member"},
+                    new Role {Name = "Admin"},
+                    new Role {Name = "Moderator"},
+                    new Role {Name = "VIP"}
+                };
+
+                foreach(var role in roles)
+                {
+                    roleManager.CreateAsync(role).Wait();
                 }
 
-                context.SaveChanges();
+                foreach(var user in users)
+                {
+                    // using Wait() to allow CreateAsync to be async
+                    user.Photos.SingleOrDefault().IsApproved = true;
+                    userManager.CreateAsync(user, "password").Wait();
+                    userManager.AddToRoleAsync(user, "Member");
+                }
+
+                // creating admin user
+
+                var adminUser = new User
+                {
+                    UserName = "Admin"
+                };
+
+                // creating user
+                var result =  userManager.CreateAsync(adminUser, "password").Result;
+
+                if(result.Succeeded)
+                {
+                    var admin = userManager.FindByNameAsync("Admin").Result;
+                    // adding the admin userd to multiple roles
+                    userManager.AddToRolesAsync(admin, new [] {"Admin", "Moderator"});
+                }
             }
         }
 

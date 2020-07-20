@@ -16,10 +16,8 @@ using System.Threading.Tasks;
 
 namespace DatingApp.API.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/users/{userId}/photos")]
-
     public class PhotosController : ControllerBase
     {
         private readonly IDatingRepository _repo;
@@ -62,7 +60,7 @@ namespace DatingApp.API.Controllers
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
 
-            var userFromRepo = await _repo.GetUser(userId);
+            var userFromRepo = await _repo.GetUser(userId, true);
 
             //Getting the file uploaded
             var file = photoForCreationDto.File;
@@ -117,7 +115,7 @@ namespace DatingApp.API.Controllers
                 return Unauthorized();
 
             //Checking if the user has the photo being asked for
-            var user = await _repo.GetUser(userId);
+            var user = await _repo.GetUser(userId, true);
             if (!user.Photos.Any(p => p.Id == id))
                 return Unauthorized();
 
@@ -147,7 +145,7 @@ namespace DatingApp.API.Controllers
                 return Unauthorized();
 
             //Checking if the user has the photo being asked for
-            var user = await _repo.GetUser(userId);
+            var user = await _repo.GetUser(userId, true);
             if (!user.Photos.Any(p => p.Id == id))
                 return Unauthorized();
 

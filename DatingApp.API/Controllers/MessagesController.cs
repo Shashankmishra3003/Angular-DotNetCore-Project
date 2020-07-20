@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 namespace DatingApp.API.Controllers
 {
     [ServiceFilter(typeof(LogUserActivity))]
-    [Authorize]
     [ApiController]
     [Route("api/users/{userId}/[controller]")]
     public class MessagesController : ControllerBase
@@ -82,7 +81,7 @@ namespace DatingApp.API.Controllers
         {
             // getting the sender data for automapper to map the sender Id and photo in
             // message to return
-            var sender = await _repo.GetUser(userId);
+            var sender = await _repo.GetUser(userId, false);
 
             if (sender.Id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
@@ -92,7 +91,7 @@ namespace DatingApp.API.Controllers
 
             // checking if recipient exists, also needed for auto mapper to map 
             // recipient info in messageToReturn
-            var recipient = await _repo.GetUser(messageForCreationDto.RecipientId);
+            var recipient = await _repo.GetUser(messageForCreationDto.RecipientId, false);
 
             if (recipient == null)
                 return BadRequest("Could not find User");

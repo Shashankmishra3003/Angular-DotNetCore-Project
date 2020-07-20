@@ -52,4 +52,20 @@ loggedIn() {
   const token = localStorage.getItem('token');
   return !this.jwtHelper.isTokenExpired(token);
 }
+
+// check if user belongs to the specified role
+roleMatch(allowedRoles): boolean {
+  let isMatch = false;
+  // get the users role from token
+  const userRoles = this.decodedToken.role as Array<string>;
+
+  // check whether the user has the role which is allowed
+  allowedRoles.forEach(element => {
+    if (userRoles.includes(element)){
+      isMatch = true;
+      return;
+    }
+  });
+  return isMatch;
+}
 }

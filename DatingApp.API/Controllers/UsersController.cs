@@ -14,10 +14,8 @@ using System.Threading.Tasks;
 namespace DatingApp.API.Controllers
 {
     [ServiceFilter(typeof(LogUserActivity))]
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-
     public class UsersController : ControllerBase
     {
         private readonly IDatingRepository _repo;
@@ -36,7 +34,7 @@ namespace DatingApp.API.Controllers
         {
             var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            var userFromRepo = await _repo.GetUser(currentUserId);
+            var userFromRepo = await _repo.GetUser(currentUserId, true);
 
             // setting the UserId and Gender. Setting opposite gender as of user if the gender is not 
             // specified in user params
@@ -60,7 +58,9 @@ namespace DatingApp.API.Controllers
         [HttpGet("{id}",Name = "GetUser")]
         public async Task<IActionResult> GetUser(int id)
         {
-            var user = await _repo.GetUser(id);
+            var isCurrentUser = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value) == id;
+
+            var user = await _repo.GetUser(id, isCurrentUser);
             var userToReturn = _mapper.Map<UserForDetailDto>(user);
             return Ok(userToReturn);
         }
@@ -71,7 +71,7 @@ namespace DatingApp.API.Controllers
             if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
 
-            var userFromRepo = await _repo.GetUser(id);
+            var userFromRepo = await _repo.GetUser(id, true);
 
             //maping the dating received by the post call with the user data received from server.
             _mapper.Map(userForUpdateDto, userFromRepo);
@@ -96,7 +96,7 @@ namespace DatingApp.API.Controllers
                 return BadRequest("You already Liked this User");
 
             // checking if recipient exists
-            if (await _repo.GetUser(recipientId) == null)
+            if (await _repo.GetUser(recipientId, false) == null)
                 return NotFound();
 
             // creating Like object

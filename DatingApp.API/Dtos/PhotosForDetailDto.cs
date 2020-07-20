@@ -16,5 +16,7 @@ namespace DatingApp.API.Dtos
         public DateTime DateAdded { get; set; }
 
         public bool IsMain { get; set; }
+
+        public bool IsApproved { get; set; }
     }
 }
